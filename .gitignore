@@ -1,4 +1,5 @@
 .idea
-check-subtotal-1.jpg
-test-text.jpg
 venv
+images
+__pycache__
+config.py
