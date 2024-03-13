@@ -1,10 +1,13 @@
 import asyncio
 
+import cv2
+from pyzbar import pyzbar
+
 import methods
 
 
 async def test():
-    await methods.cheque_gpt_formatter()
+    print()
 
 if __name__ == "__main__":
     asyncio.run(test())
