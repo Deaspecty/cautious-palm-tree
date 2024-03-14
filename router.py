@@ -24,15 +24,15 @@ async def start(m: Message):
 
 @router.message(F.photo)
 async def image(m: Message):
-    image_src = "images\\" + m.photo[-1].file_id + ".jpg"
-    await m.bot.download(m.photo[-1].file_id, "D:\\PROJECTS\\cheque_scanner\\" + image_src)
+    file_id = m.photo[-1].file_id
+    image_src = "images\\" + file_id + ".jpg"
+
+    await m.bot.download(file_id, "D:\\PROJECTS\\cheque_scanner\\" + image_src)
     image_text = methods.image_to_text(image_src)
     qr_data = methods.get_qr_data(image_src)[0].data
+
     if qr_data is not None:
-        logging.info(qr_data)
-        json_data = json.dumps({
-            "imageText": image_text
-        })
+        json_data = json.dumps({"imageText": image_text})  # todo заменить на парсер с ссылкой на сайт с чеком
         logging.info(f"Чек {image_src} считан: " + str(qr_data))
         db_repo.insert_cheque([str(m.from_user.id), json_data, qr_data])
         await m.answer(text="Чек считан: " + str(qr_data))

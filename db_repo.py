@@ -1,4 +1,3 @@
-import logging
 import coloredlogs
 from config import *
 
