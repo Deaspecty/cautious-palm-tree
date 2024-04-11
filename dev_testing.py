@@ -9,7 +9,6 @@ async def test():
     data = format_data(parse_cheque_site(a))
     for row in data["no_format_header"].split("\n"):
         data.update(search_in_text(row))
-    print(data)
 
 if __name__ == "__main__":
     asyncio.run(test())
