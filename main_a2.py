@@ -1,18 +1,20 @@
+import asyncio
 import json
 import logging
-from aiogram import Router, F
-from aiogram.enums import ContentType
-from aiogram.filters import Command
-from aiogram.types import Message, Update, WebAppData
+
+from aiogram import Dispatcher, Bot
+from aiogram.types import Message, WebAppData, ContentType
 from db_repo import *
 from keyboards import web_app_qrscan
 from methods import *
 
-router = Router()
-coloredlogs.install(level="DEBUG")
+
+bot = Bot(token=TOKEN)
+dp = Dispatcher(bot=bot)
+coloredlogs.install(level="INFO")
 
 
-@router.message(Command("start"))
+@dp.message_handler(commands=["start"])
 async def start(m: Message):
     if insert_user([str(m.from_user.id), str(m.from_user.username)]):
         kb = web_app_qrscan()
@@ -24,7 +26,7 @@ async def start(m: Message):
         logging.error("Problems on start")
 
 
-@router.message(F.photo)
+@dp.message_handler(content_types=[ContentType.PHOTO])
 async def image(m: Message):
     file_id = m.photo[-1].file_id
     image_src = "images\\" + file_id + ".jpg"
@@ -57,7 +59,7 @@ async def image(m: Message):
         await m.answer(text="Чек не распознан ❌")
 
 
-@router.message(Command("mycheques"))
+@dp.message_handler(commands=["mycheques"])
 async def get_my_cheques(m: Message):
     user_cheques = get_all_cheques(m.from_user.id)
     cheques_str = ""
@@ -69,7 +71,7 @@ async def get_my_cheques(m: Message):
         await m.answer(text="У вас еще нет чеков 📝")
 
 
-@router.message(F.document)
+@dp.message_handler(content_types=[ContentType.DOCUMENT])
 async def image(m: Message):
     if m.document.mime_type == "image/png":
         file_id = m.document.file_id
@@ -103,8 +105,24 @@ async def image(m: Message):
             await m.answer(text="Чек не распознан ❌")
 
 
-@router.message(WebAppData)
-async def web_app_data(message: Message):
-    data = json.loads(message.web_app_data.data)
-    await message.reply_text("Your data was:" + data)
+@dp.message_handler(content_types="web_app_data")
+async def asd(message: Message):
+    web_data = message.web_app_data.data
+    print(web_data, web_data.__class__)
+    data = format_data(parse_cheque_site(web_data))
+    for row in data["no_format_header"].split("\n"):
+        data.update(search_in_text(row))
+    print(data)
+    text = beautifulize_data(data)
+    print(text)
+    await message.answer(text=text)
 
+
+async def start_bot():
+    logging.basicConfig(level=logging.INFO)
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
+
+
+if __name__ == '__main__':
+    asyncio.run(start_bot())

@@ -33,7 +33,6 @@ def parse_cheque_site(url):
     options = Options()
     options.add_argument("--headless")
     driver = webdriver.Chrome(options=options)
-    url = str(url, encoding="utf-8")
     data = {}
     if url.startswith("http://consumer.oofd.kz"):
         driver.get(url)
@@ -77,22 +76,47 @@ def format_data(data):
     return cheque_json
 
 
-def search_in_text(text):
-    search_patterns = {
-        "ИИН/БИН:\s*(\d+)": "iin_bin",
-        "Сер. номер ККМ:\s*(\d+)": "kkm",
-        "Регистрационный номер:\s*(\d+)": "reg_num",
-        "Адрес торговой точки:(.*)": "address",
-        "Продажа, (.*)": "sale",
-        "ФП: (.*):": "fp",
-    }
+class Pattern:
+    def __init__(self, startswith, pattern, tag):
+        self.startswith = startswith
+        self.pattern = pattern
+        self.tag = tag
+
+    def check(self, text: str):
+        if text.startswith(self.startswith):
+            re.search(self.pattern, text).group(1)
+
+
+def search_in_text(text: str):
+    search_patterns = [
+        Pattern("ИИН/БИН:", "ИИН/БИН:\s*(\d+)", "iin_bin"),
+        Pattern("Сер. номер ККМ:", "Сер. номер ККМ:\s*(\d+)", "kkm"),
+        Pattern("Регистрационный номер:", "Регистрационный номер:\s*(\d+)", "reg_num"),
+        Pattern("Адрес торговой точки:", "Адрес торговой точки:(.*)", "address"),
+        Pattern("Продажа,", "Продажа,(.*)", "sale"),
+        Pattern("ФП:", "ФП:(.*)", "fp")
+    ]
     found_value = {}
     for pattern in search_patterns:
-        if re.search(pattern, text):
-            found_value.update({search_patterns[pattern]: re.search(pattern, text).group(1)})
-        elif re.search("(\d{2}\.\d{2}\.\d{4}) / (\d{2}:\d{2})", text):  # datetime pattern
-            result = re.search("(\d{2}\.\d{2}\.\d{4}) / (\d{2}:\d{2})", text)
-            found_value.update({search_patterns[pattern]: result.group(1) + " " + result.group(2)})
+        if text.startswith(pattern.startswith):
+            found_value.update({pattern.tag: re.search(pattern.pattern, text).group(1)})
+        # elif re.search("(\d{2}\.\d{2}\.\d{4}) / (\d{2}:\d{2})", text):  # datetime pattern
+        #     result = re.search("(\d{2}\.\d{2}\.\d{4}) / (\d{2}:\d{2})", text)
+        #     found_value.update({search_patterns[pattern]: result.group(1) + " " + result.group(2)})
 
     return found_value  # None
 
+
+def beautifulize_data(data: dict):
+    text = f"Номер чека: {data['fp']}\n\
+Адрес торговой точки: {data['address']}\n\
+Оплата: {data['sale']}\n\
+Товары: \n\
+"
+    for pr in data.get("items"):
+        text += f"{pr[0]} {pr[1]}  - {to_int(pr[3])} * {to_int(pr[4])} = {to_int(pr[3]) * to_int(pr[4])}\n"
+    return text
+
+
+def to_int(text):
+    return int(text.replace(" ", "").split(",")[0])

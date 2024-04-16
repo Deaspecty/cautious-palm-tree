@@ -1,8 +1,6 @@
 import asyncio
 import logging
-
 from aiogram.utils.web_app import check_webapp_signature
-
 import config
 from config import *
 import coloredlogs as coloredlogs
@@ -17,12 +15,11 @@ async def start_bot():
 
 
 bot = Bot(token=TOKEN)
-dp = Dispatcher()
+dp = Dispatcher(bot=bot)
 dp.include_routers(router.router)
 coloredlogs.install(level="DEBUG")
 
 
 if __name__ == '__main__':
     asyncio.run(start_bot())
-
     # отправляем сообщение в ответ на отправку данных из веб-приложения
