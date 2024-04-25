@@ -40,13 +40,13 @@ def insert_cheque(data) -> bool:
 
 
 def insert_cheque(user_id, qr_url, verified, cheque_json=None) -> bool:
+    logging.info("insert_cheque")
     if verified:
         query = f"INSERT INTO cheque_bot.cheques(user_id, qr_url, verified, cheque_json) VALUES (%s, %s, %s, %s)"
         cursor = con.cursor()
         cursor.execute(query, [str(user_id), qr_url, verified, cheque_json])
         con.commit()
         cursor.close()
-        logging.info("Инсерт чек")
         return True
     else:
         query = f"INSERT INTO cheque_bot.cheques(user_id, qr_url, verified) VALUES (%s, %s, %s)"

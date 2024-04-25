@@ -99,7 +99,6 @@ class Pattern:
 
 
 def search_in_text(text: str):
-    logging.info("search_in_text")
     search_patterns = [
         Pattern("ИИН/БИН:", "ИИН/БИН:\s*(\d+)", "iin_bin"),
         Pattern("Сер. номер ККМ:", "Сер. номер ККМ:\s*(\d+)", "kkm"),
