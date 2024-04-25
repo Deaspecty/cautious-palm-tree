@@ -3,7 +3,7 @@ import logging
 import re
 import coloredlogs
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.support.wait import WebDriverWait
@@ -23,7 +23,7 @@ def parse_cheque_site(url):
     logging.info("01")
     service = Service(executable_path=geckodriver_path)
     # Создание экземпляра драйвера Firefox
-    driver = webdriver.Firefox(options=options, service=service)
+    driver = webdriver.Firefox(service=service, options=options)
     logging.info("02")
     data = {}
     if url.startswith("http://consumer.oofd.kz"):
