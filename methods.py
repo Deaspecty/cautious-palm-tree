@@ -101,7 +101,13 @@ def search_in_text(text: str):
         Pattern("Регистрационный номер:", "Регистрационный номер:\s*(\d+)", "reg_num"),
         Pattern("Адрес торговой точки:", "Адрес торговой точки:(.*)", "address"),
         Pattern("Продажа,", "Продажа,(.*)", "sale"),
-        Pattern("ФП:", "ФП:(.*)", "fp")
+        Pattern("ФП:", "ФП:(.*)", "fp"),
+        Pattern("ЖСН/БСН:", "ЖСН/БСН:\s*(\d+)", "iin_bin"),
+        Pattern("БКМ сериялық нөмері:", "БКМ сериялық нөмері:\s*(\d+)", "kkm"),
+        Pattern("Тіркеу нөмірі:", "Тіркеу нөмірі:\s*(\d+)", "reg_num"),
+        Pattern("Сауда орынның мекен-жайы:", "Сауда орынның мекен-жайы:(.*)", "address"),
+        Pattern("Сату,", "Сату,(.*)", "sale"),
+        Pattern("ФБ:", "ФБ:(.*)", "fp")
     ]
     found_value = {}
     for pattern in search_patterns:
@@ -116,11 +122,7 @@ def search_in_text(text: str):
 
 def beautifulize_data_one(data: dict):
     print(111)
-    text = f"Номер чека: {data['fp']}\n\
-Адрес торговой точки: {data['address']}\n\
-Оплата: {data['sale']}\n\n\
-Товары: \n\
-"
+    text = f"Номер чека: {data['fp']}\nАдрес торговой точки: {data['address']}\nОплата: {data['sale']}\nТовары: \n"
     print(222)
     items = data.get("items")
     column_names = data.get("column_names")
@@ -136,6 +138,15 @@ def beautifulize_data_one(data: dict):
                 index.update({"quantity": i})
             case "Сумма":
                 index.update({"sum": i})
+            case "Атауы":
+                index.update({"name": i})
+            case "Бағасы":
+                index.update({"price": i})
+            case "Саны":
+                index.update({"quantity": i})
+            case "Сомасы":
+                index.update({"sum": i})
+
     for product in items:
         text += f"{product[0]} {product[index['name']]} - " \
                 f"{product[index['price']]} * {product[index['quantity']]} = " \
@@ -164,7 +175,14 @@ def beautifulize_data_all(data: dict):
                 elif column_names[i] == "Кол-во":
                     index.update({"quantity": i})
                 elif column_names[i] == "Сумма":
-                    print(column_names[i], i)
+                    index.update({"sum": i})
+                elif column_names[i] == "Атауы":
+                    index.update({"name": i})
+                elif column_names[i] == "Бағасы":
+                    index.update({"price": i})
+                elif column_names[i] == "Саны":
+                    index.update({"quantity": i})
+                elif column_names[i] == "Сомасы":
                     index.update({"sum": i})
 
             for product in items:
