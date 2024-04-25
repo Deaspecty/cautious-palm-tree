@@ -126,7 +126,6 @@ def search_in_text(text: str):
 
 def beautifulize_data_one(data: dict):
     logging.info("beautifulize_data_one")
-    print(data)
     text = f"Номер чека: {data['fp']}\nАдрес торговой точки: {data['address']}\nОплата: {data['sale']}\nТовары: \n"
     items = data.get("items")
     column_names = data.get("column_names")
@@ -155,7 +154,6 @@ def beautifulize_data_one(data: dict):
         text += f"{product[0]} {product[index['name']]} - " \
                 f"{product[index['price']]} * {product[index['quantity']]} = " \
                 f"{product[index['sum']]}\n"
-    print("teext: ", text)
     text += f"Итого: {total}"
 
     return text
@@ -168,7 +166,6 @@ def beautifulize_data_all(data: dict):
     for cheque in data:
         if cheque[2] is not None:
             cheque_json = json.loads(cheque[2])
-            print(cheque_json)
             items = cheque_json.get("items")
             column_names = cheque_json.get("column_names")
             index = {"№": 0}
@@ -190,14 +187,8 @@ def beautifulize_data_all(data: dict):
                     index.update({"quantity": i})
                 elif column_names[i] == "Сомасы":
                     index.update({"sum": i})
-
             for product in items:
-                # text += f"{product[0]} {product[index['name']]} - " \
-                #         f"{product[index['price']]} * {product[index['quantity']]} = " \
-                #         f"{product[index['sum']]}\n"
-                print(product)
                 s = product[index['sum']].split(",")[0].replace(" ", "")
-                print(s)
                 sum += int(s)
             text += f"{counter}. {sum}тг\n"
             counter += 1

@@ -61,7 +61,6 @@ async def start(m: Message):
 @dp.message_handler(commands=["mycheques"])
 async def get_my_cheques(m: Message):
     user_cheques = get_all_cheques(m.from_user.id, verified=True)
-    print(user_cheques)
     if len(user_cheques) != 0:
         text = beautifulize_data_all(user_cheques)
         await m.answer(text=text)
@@ -113,7 +112,6 @@ async def asd(message: Message):
         for row in data["no_format_header"].split("\n"):
             data.update(search_in_text(row))
         text = beautifulize_data_one(data)
-        print(text)
         await msg.edit_text(text=text)
     else:
         insert_cheque(user_id=message.from_user.id, qr_url=url, verified=False)
@@ -122,6 +120,7 @@ async def asd(message: Message):
 
 @dp.message_handler(commands=["test"])
 async def asd(message: Message):
+    print(" ")
     url = "http://consumer.oofd.kz?i=2673764153&f=010102274600&s=1890.00&t=20231210T151300"
     msg = await message.answer(text="Обрабатываю чек...")
     data = format_data(parse_cheque_site(url))
@@ -130,7 +129,6 @@ async def asd(message: Message):
         for row in data["no_format_header"].split("\n"):
             data.update(search_in_text(row))
         text = beautifulize_data_one(data)
-        print(text)
         await msg.edit_text(text=text)
     else:
         insert_cheque(user_id=message.from_user.id, qr_url=url, verified=False)
