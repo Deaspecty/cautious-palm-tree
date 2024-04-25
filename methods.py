@@ -115,12 +115,13 @@ def search_in_text(text: str):
 
 
 def beautifulize_data_one(data: dict):
+    print(111)
     text = f"Номер чека: {data['fp']}\n\
 Адрес торговой точки: {data['address']}\n\
-Оплата: {data['sale']}\n\
-\n\
+Оплата: {data['sale']}\n\n\
 Товары: \n\
 "
+    print(222)
     items = data.get("items")
     column_names = data.get("column_names")
     print(data)
