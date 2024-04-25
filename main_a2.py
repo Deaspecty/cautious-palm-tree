@@ -129,6 +129,7 @@ async def asd(message: Message):
 async def asd(message: Message):
     url = "http://consumer.oofd.kz?i=2673764153&f=010102274600&s=1890.00&t=20231210T151300"
     msg = await message.answer(text="Обрабатываю чек...")
+    logging.info("Отправил сообщение")
     data = format_data(parse_cheque_site(url))
     if data.__len__() != 0:
         insert_cheque(user_id=message.from_user.id, qr_url=url, verified=True, cheque_json=json.dumps(data))

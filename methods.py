@@ -13,8 +13,8 @@ from entities import Cheque
 coloredlogs.install(level="DEBUG")
 
 
-
 def parse_cheque_site(url):
+    logging.info("Старт Парс")
     options = Options()
     options.add_argument("--headless")
     options.headless = True
@@ -43,10 +43,12 @@ def parse_cheque_site(url):
             "url": "http://consumer.oofd.kz"
         }
     print(data.__len__())
+    logging.info("Конец парс")
     return data
 
 
 def format_data(data):
+    logging.info("Формат старт")
     cheque_json = {}
     if data.__len__() != 0:
         if data["url"].startswith("http://consumer.oofd.kz"):
@@ -71,6 +73,7 @@ def format_data(data):
             }
             for row in cheque_json["no_format_header"].split("\n"):
                 cheque_json.update(search_in_text(row))
+    logging.info("Формат Конец")
     return cheque_json
 
 
