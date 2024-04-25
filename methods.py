@@ -118,7 +118,7 @@ def beautifulize_data_one(data: dict):
     text = f"Номер чека: {data['fp']}\n\
 Адрес торговой точки: {data['address']}\n\
 Оплата: {data['sale']}\n\
-\
+\n\
 Товары: \n\
 "
     items = data.get("items")
