@@ -18,6 +18,7 @@ coloredlogs.install(level="DEBUG")
 
 
 def parse_cheque_site(url):
+    logging.info("parse_cheque_site")
     if config.BROWSER == "firefox":
         options = FO()
         options.add_argument("--headless")
@@ -57,7 +58,7 @@ def parse_cheque_site(url):
 
 
 def format_data(data):
-    logging.info("Формат старт")
+    logging.info("format_data")
     cheque_json = {}
     if data.__len__() != 0:
         if data["url"].startswith("http://consumer.oofd.kz"):
@@ -83,7 +84,6 @@ def format_data(data):
             }
             for row in cheque_json["no_format_header"].split("\n"):
                 cheque_json.update(search_in_text(row))
-    logging.info("Формат Конец")
     return cheque_json
 
 
@@ -99,6 +99,7 @@ class Pattern:
 
 
 def search_in_text(text: str):
+    logging.info("search_in_text")
     search_patterns = [
         Pattern("ИИН/БИН:", "ИИН/БИН:\s*(\d+)", "iin_bin"),
         Pattern("Сер. номер ККМ:", "Сер. номер ККМ:\s*(\d+)", "kkm"),
@@ -125,6 +126,7 @@ def search_in_text(text: str):
 
 
 def beautifulize_data_one(data: dict):
+    logging.info("beautifulize_data_one")
     print(data)
     text = f"Номер чека: {data['fp']}\nАдрес торговой точки: {data['address']}\nОплата: {data['sale']}\nТовары: \n"
     items = data.get("items")
@@ -161,6 +163,7 @@ def beautifulize_data_one(data: dict):
 
 
 def beautifulize_data_all(data: dict):
+    logging.info("beautifulize_data_all")
     text = f""
     counter = 1
     for cheque in data:
@@ -203,4 +206,5 @@ def beautifulize_data_all(data: dict):
 
 
 def to_int(text):
+    logging.info("to_int")
     return re.findall(r'\d+', text.split(",")[0])
