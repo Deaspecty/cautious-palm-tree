@@ -1,34 +1,17 @@
 import json
 import logging
 import re
-
 import coloredlogs
-import cv2
-import pytesseract
-from pyzbar import pyzbar
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
 from entities import Cheque
 
 coloredlogs.install(level="DEBUG")
 
-
-def image_to_text(filename):
-    image_obj = cv2.imread(filename)
-    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    return pytesseract.image_to_string(image_obj, lang="eng+rus", config=r'--oem 3 --psm 6', output_type="dict")
-
-
-def get_qr_data(filename):
-    filename = filename
-    img = cv2.imread(filename)  # Считываем файл с изображением
-    qrcodes = pyzbar.decode(img)  # Создается список найденных кодов
-    return qrcodes
 
 
 def parse_cheque_site(url):
