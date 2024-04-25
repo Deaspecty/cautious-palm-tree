@@ -4,5 +4,6 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 def web_app_qrscan():
     kb = ReplyKeyboardMarkup(
         keyboard=[[KeyboardButton(text="Сканировать QR",
-                                  web_app=WebAppInfo(url="https://scanner-server.strattonit.ru/"))]])
+                                  web_app=WebAppInfo(url="https://scanner-server.strattonit.ru/"))]],
+        resize_keyboard=True)
     return kb

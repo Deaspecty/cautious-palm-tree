@@ -39,6 +39,23 @@ def insert_cheque(data) -> bool:
         return False
 
 
+def insert_cheque(user_id, qr_url, verified, cheque_json=None) -> bool:
+    if verified:
+        query = f"INSERT INTO cheque_bot.cheques(user_id, qr_url, verified, cheque_json) VALUES (%s, %s, %s, %s)"
+        cursor = con.cursor()
+        cursor.execute(query, [str(user_id), qr_url, verified, cheque_json])
+        con.commit()
+        cursor.close()
+        return True
+    else:
+        query = f"INSERT INTO cheque_bot.cheques(user_id, qr_url, verified) VALUES (%s, %s, %s)"
+        cursor = con.cursor()
+        cursor.execute(query, [user_id, qr_url, verified])
+        con.commit()
+        cursor.close()
+        return False
+
+
 def not_duplicate(user_id, qr_url):
     cursor = con.cursor(buffered=True)
     cursor.execute("SELECT user_id, qr_url FROM cheques WHERE user_id=%s and qr_url=%s", (user_id, qr_url))
@@ -50,10 +67,15 @@ def not_duplicate(user_id, qr_url):
         return False
 
 
-def get_all_cheques(user_id):
-    query = f"SELECT * FROM cheques WHERE user_id=%s"
-    cursor = con.cursor()
-    cursor.execute(query, (user_id,))
+def get_all_cheques(user_id, verified=False):
+    if verified:
+        query = f"SELECT * FROM cheques WHERE user_id=%s and verified=%s"
+        cursor = con.cursor()
+        cursor.execute(query, (user_id, verified))
+    else:
+        query = f"SELECT * FROM cheques WHERE user_id=%s"
+        cursor = con.cursor()
+        cursor.execute(query, (user_id,))
     result = cursor.fetchall()
     cursor.close()
     return result
