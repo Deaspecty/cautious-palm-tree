@@ -61,6 +61,8 @@ def format_data(data):
             items = []
             tag_ticket_items = data["tag_app_ticket_items"]
             tag_ticket_header = data["tag_app_ticket_header"]
+            tag_ticket_total = data["tag_ticket_total"]
+
             rows_count = len(tag_ticket_items)
             for row in range(1, rows_count):
                 items.append([])
@@ -75,7 +77,8 @@ def format_data(data):
             cheque_json = {
                 "column_names": tag_ticket_items[0].text.split("\n"),
                 "items": items,
-                "no_format_header": tag_ticket_header[0].text
+                "no_format_header": tag_ticket_header[0].text,
+                "total": tag_ticket_total[1].text
             }
             for row in cheque_json["no_format_header"].split("\n"):
                 cheque_json.update(search_in_text(row))
@@ -121,12 +124,10 @@ def search_in_text(text: str):
 
 
 def beautifulize_data_one(data: dict):
-    print(111)
     text = f"Номер чека: {data['fp']}\nАдрес торговой точки: {data['address']}\nОплата: {data['sale']}\nТовары: \n"
-    print(222)
     items = data.get("items")
     column_names = data.get("column_names")
-    print(data)
+    total = to_int(data.get("total"))
     index = {"№": 0}
     for i in range(len(column_names)):
         match column_names[i]:
@@ -152,7 +153,8 @@ def beautifulize_data_one(data: dict):
                 f"{product[index['price']]} * {product[index['quantity']]} = " \
                 f"{product[index['sum']]}\n"
     print("teext: ", text)
-    text += f"\nИтого: "
+    text += f"\nИтого: {total}"
+
     return text
 
 
@@ -196,3 +198,7 @@ def beautifulize_data_all(data: dict):
             text += f"{counter}. {sum}тг\n"
             counter += 1
     return text
+
+
+def to_int(text):
+    return re.findall(r'\d+', text.split(",")[0])
