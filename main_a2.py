@@ -133,7 +133,6 @@ async def asd(message: Message):
     if data.__len__() != 0:
         insert_cheque(user_id=message.from_user.id, qr_url=url, verified=True, cheque_json=json.dumps(data))
         for row in data["no_format_header"].split("\n"):
-            print(90)
             data.update(search_in_text(row))
         text = beautifulize_data_one(data)
         print(text)

@@ -3,28 +3,40 @@ import logging
 import re
 import coloredlogs
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.options import Options as FO
+from selenium.webdriver.chrome.options import Options as CO
 from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.service import Service as FS
+from selenium.webdriver.chrome.service import Service as CS
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+import config
 from entities import Cheque
 
 coloredlogs.install(level="DEBUG")
 
 
 def parse_cheque_site(url):
-    logging.info("Старт Парс")
-    options = Options()
-    options.add_argument("--headless")
-    options.headless = True
-    geckodriver_path = '/usr/local/bin/geckodriver'
-    # geckodriver_path = 'D:\\PROJECTS\\GECKODRIVER\\geckodriver.exe'
-    logging.info("01")
-    service = Service(executable_path=geckodriver_path)
-    # Создание экземпляра драйвера Firefox
-    driver = webdriver.Firefox(service=service, options=options)
-    logging.info("02")
+    if config.BROWSER == "firefox":
+        options = FO()
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.headless = True
+        geckodriver_path = '/usr/local/bin/geckodriver'
+        service = FS(executable_path=geckodriver_path)
+        driver = webdriver.Firefox(service=service, options=options)
+    elif config.BROWSER == "chrome":
+        options = CO()
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.headless = True
+        driver = webdriver.Chrome(options=options)
+
     data = {}
     if url.startswith("http://consumer.oofd.kz"):
         logging.info("1")
@@ -41,7 +53,7 @@ def parse_cheque_site(url):
         logging.info("5")
         tag_app_ticket_items = driver.find_elements("xpath", "/html/body/app-root/block-ui/app-search/div/div/div[3]"
                                                              "/div/app-ticket/div/div/div/app-ticket-items/*")
-        tag_ticket_total = driver.find_elements("class name", "ticket-totals/*")
+        tag_ticket_total = driver.find_elements("class name", "total-sum/*")
         data = {
             "tag_app_ticket_header": tag_app_ticket_header,
             "tag_app_ticket_items": tag_app_ticket_items,
@@ -67,18 +79,16 @@ def format_data(data):
             for row in range(1, rows_count):
                 items.append([])
                 a_list = tag_ticket_items[row].find_elements(By.XPATH,
-                                                             "/html/body/app-root/block-ui/app-search/div/div/div[3]/div/"
-                                                             "app-ticket/div/div/div/app-ticket-items/div[2]/div/div[1]/"
-                                                             f"div[{row}]/*")
-                print(a_list)
+                                                             "/html/body/app-root/block-ui/app-search/div/div/div[3]/"
+                                                             "div/app-ticket/div/div/div/app-ticket-items/div[2]/div/"
+                                                             f"div[1]/div[{row}]/*")
                 for a in a_list:
                     items[row - 1].append(a.text)
-
             cheque_json = {
                 "column_names": tag_ticket_items[0].text.split("\n"),
                 "items": items,
                 "no_format_header": tag_ticket_header[0].text,
-                "total": tag_ticket_total[1].text
+                "total": tag_ticket_total[0].text
             }
             for row in cheque_json["no_format_header"].split("\n"):
                 cheque_json.update(search_in_text(row))
@@ -128,7 +138,7 @@ def beautifulize_data_one(data: dict):
     text = f"Номер чека: {data['fp']}\nАдрес торговой точки: {data['address']}\nОплата: {data['sale']}\nТовары: \n"
     items = data.get("items")
     column_names = data.get("column_names")
-    total = to_int(data.get("total"))
+    total = data.get("total").split("\n")[1]
     index = {"№": 0}
     for i in range(len(column_names)):
         match column_names[i]:
@@ -154,7 +164,7 @@ def beautifulize_data_one(data: dict):
                 f"{product[index['price']]} * {product[index['quantity']]} = " \
                 f"{product[index['sum']]}\n"
     print("teext: ", text)
-    text += f"\nИтого: {total}"
+    text += f"Итого: {total}"
 
     return text
 
