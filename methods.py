@@ -21,9 +21,6 @@ def parse_cheque_site(url):
     if config.BROWSER == "firefox":
         options = FO()
         options.add_argument("--headless")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--disable-gpu")
         options.headless = True
         geckodriver_path = '/usr/local/bin/geckodriver'
         service = FS(executable_path=geckodriver_path)
@@ -39,18 +36,13 @@ def parse_cheque_site(url):
 
     data = {}
     if url.startswith("http://consumer.oofd.kz"):
-        logging.info("1")
         driver.get(url)
-        logging.info("2")
         wait = WebDriverWait(driver, 10)
-        logging.info("3")
         wait.until(
             EC.presence_of_element_located((By.XPATH, "/html/body/app-root/block-ui/app-search/div/div/div[3]"
                                                       "/div/app-ticket/div/div/div/app-ticket-header")))
-        logging.info("4")
         tag_app_ticket_header = driver.find_elements("xpath", "/html/body/app-root/block-ui/app-search/div/div/div[3]"
                                                               "/div/app-ticket/div/div/div/app-ticket-header/*")
-        logging.info("5")
         tag_app_ticket_items = driver.find_elements("xpath", "/html/body/app-root/block-ui/app-search/div/div/div[3]"
                                                              "/div/app-ticket/div/div/div/app-ticket-items/*")
         tag_ticket_total = driver.find_elements("class name", "total-sum/*")
@@ -60,7 +52,6 @@ def parse_cheque_site(url):
             "tag_ticket_total": tag_ticket_total,
             "url": "http://consumer.oofd.kz"
         }
-    print(data.__len__())
     logging.info("Конец парс")
     return data
 

@@ -105,18 +105,13 @@ async def get_my_cheques(m: Message):
 
 @dp.message_handler(content_types="web_app_data")
 async def asd(message: Message):
-    DEV_MODE = False
-    if DEV_MODE:
-        url = "http://consumer.oofd.kz?i=1858674569&f=010100658756&s=3800.00&t=20240410T144420"
-    else:
-        url = message.web_app_data.data
+    url = message.web_app_data.data
     msg = await message.answer(text="Обрабатываю чек...")
     data = format_data(parse_cheque_site(url))
     if data.__len__() != 0:
         insert_cheque(user_id=message.from_user.id, qr_url=url, verified=True, cheque_json=json.dumps(data))
         for row in data["no_format_header"].split("\n"):
             data.update(search_in_text(row))
-        print(data)
         text = beautifulize_data_one(data)
         print(text)
         await msg.edit_text(text=text)
