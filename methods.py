@@ -134,10 +134,14 @@ def beautifulize_data_one(data: dict):
                 index.update({"quantity": i})
             case "Сумма":
                 index.update({"sum": i})
+    print("index: ", index)
+    print("column_names: ", column_names)
+    print("items: ", items)
     for product in items:
         text += f"{product[0]} {product[index['name']]} - " \
                 f"{product[index['price']]} * {product[index['quantity']]} = " \
                 f"{product[index['sum']]}\n"
+    print("teext: ", text)
     text += f"\nИтого: "
     return text
 
