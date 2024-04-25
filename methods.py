@@ -138,6 +138,8 @@ def beautifulize_data_one(data: dict):
     print("column_names: ", column_names)
     print("items: ", items)
     for product in items:
+        print("index\/")
+        print(index)
         text += f"{product[0]} {product[index['name']]} - " \
                 f"{product[index['price']]} * {product[index['quantity']]} = " \
                 f"{product[index['sum']]}\n"
