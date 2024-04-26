@@ -72,8 +72,8 @@ def format_data(data):
                 items.append([])
                 a_list = tag_ticket_items[row].find_elements(By.XPATH,
                                                              "/html/body/app-root/block-ui/app-search/div/div/div[3]/"
-                                                             "div/app-ticket/div/div/div/app-ticket-items/div[2]/div/"
-                                                             f"div[1]/div[{row}]/*")
+                                                             f"div/app-ticket/div/div/div/app-ticket-items/"
+                                                             f"div[{row + 1}]/div/div[1]/div[1]/*")
                 for a in a_list:
                     items[row - 1].append(a.text)
             cheque_json = {
@@ -151,9 +151,12 @@ def beautifulize_data_one(data: dict):
                 index.update({"sum": i})
 
     for product in items:
-        text += f"{product[0]} {product[index['name']]} - " \
-                f"{product[index['price']]} * {product[index['quantity']]} = " \
-                f"{product[index['sum']]}\n"
+        try:
+            text += f"{product[0]} {product[index['name']]} - " \
+                    f"{product[index['price']]} * {product[index['quantity']]} = " \
+                    f"{product[index['sum']]}\n"
+        except Exception:
+            pass
     text += f"Итого: {total}"
 
     return text

@@ -104,6 +104,7 @@ async def get_my_cheques(m: Message):
 
 @dp.message_handler(content_types="web_app_data")
 async def asd(message: Message):
+    print(" ")
     url = message.web_app_data.data
     msg = await message.answer(text="Обрабатываю чек...")
     data = format_data(parse_cheque_site(url))
@@ -118,21 +119,21 @@ async def asd(message: Message):
         await msg.edit_text(text="Не удалось обработать чек")
 
 
-@dp.message_handler(commands=["test"])
-async def asd(message: Message):
-    print(" ")
-    url = "http://consumer.oofd.kz?i=2673764153&f=010102274600&s=1890.00&t=20231210T151300"
-    msg = await message.answer(text="Обрабатываю чек...")
-    data = format_data(parse_cheque_site(url))
-    if data.__len__() != 0:
-        insert_cheque(user_id=message.from_user.id, qr_url=url, verified=True, cheque_json=json.dumps(data))
-        for row in data["no_format_header"].split("\n"):
-            data.update(search_in_text(row))
-        text = beautifulize_data_one(data)
-        await msg.edit_text(text=text)
-    else:
-        insert_cheque(user_id=message.from_user.id, qr_url=url, verified=False)
-        await msg.edit_text(text="Не удалось обработать чек")
+# @dp.message_handler(commands=["test"])
+# async def asd(message: Message):
+#     print(" ")
+#     url = "http://consumer.oofd.kz?i=2673764153&f=010102274600&s=1890.00&t=20231210T151300"
+#     msg = await message.answer(text="Обрабатываю чек...")
+#     data = format_data(parse_cheque_site(url))
+#     if data.__len__() != 0:
+#         insert_cheque(user_id=message.from_user.id, qr_url=url, verified=True, cheque_json=json.dumps(data))
+#         for row in data["no_format_header"].split("\n"):
+#             data.update(search_in_text(row))
+#         text = beautifulize_data_one(data)
+#         await msg.edit_text(text=text)
+#     else:
+#         insert_cheque(user_id=message.from_user.id, qr_url=url, verified=False)
+#         await msg.edit_text(text="Не удалось обработать чек")
 
 
 async def start_bot():
