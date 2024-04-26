@@ -7,6 +7,7 @@ coloredlogs.install(level="DEBUG")
 
 
 def insert_user(data) -> bool:
+    con.reconnect()
     if len(data) != 0:
         query = f"INSERT INTO cheque_bot.users_data(user_id, username) VALUES (%s, %s)"
         cursor = con.cursor()
@@ -19,6 +20,7 @@ def insert_user(data) -> bool:
 
 
 def get_user(user_id) -> list:
+    con.reconnect()
     query = f"SELECT * FROM cheque_bot.users_data WHERE user_id = '{user_id}'"
     cursor = con.cursor()
     cursor.execute(query)
@@ -28,6 +30,7 @@ def get_user(user_id) -> list:
 
 
 def insert_cheque(data) -> bool:
+    con.reconnect()
     if len(data) != 0:
         query = f"INSERT INTO cheque_bot.cheques(user_id, cheque_json, qr_url, verified) VALUES (%s, %s, %s, %s)"
         cursor = con.cursor()
@@ -40,6 +43,7 @@ def insert_cheque(data) -> bool:
 
 
 def insert_cheque(user_id, qr_url, verified, cheque_json=None) -> bool:
+    con.reconnect()
     logging.info("insert_cheque")
     if verified:
         query = f"INSERT INTO cheque_bot.cheques(user_id, qr_url, verified, cheque_json) VALUES (%s, %s, %s, %s)"
@@ -59,6 +63,7 @@ def insert_cheque(user_id, qr_url, verified, cheque_json=None) -> bool:
 
 
 def not_duplicate(user_id, qr_url):
+    con.reconnect()
     cursor = con.cursor(buffered=True)
     cursor.execute("SELECT user_id, qr_url FROM cheques WHERE user_id=%s and qr_url=%s", (user_id, qr_url))
     user_cheque = cursor.fetchall()
@@ -70,6 +75,7 @@ def not_duplicate(user_id, qr_url):
 
 
 def get_all_cheques(user_id, verified=False):
+    con.reconnect()
     if verified:
         query = f"SELECT * FROM cheques WHERE user_id=%s and verified=%s"
         cursor = con.cursor()

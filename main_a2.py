@@ -15,6 +15,7 @@ coloredlogs.install(level="INFO")
 
 @dp.message_handler(commands=["start"])
 async def start(m: Message):
+    con.reconnect()
     if insert_user([str(m.from_user.id), str(m.from_user.username)]):
         kb = web_app_qrscan()
         await m.answer(text=f"Приветствую @{m.from_user.username} 👋"
@@ -60,6 +61,7 @@ async def start(m: Message):
 
 @dp.message_handler(commands=["mycheques"])
 async def get_my_cheques(m: Message):
+    con.reconnect()
     user_cheques = get_all_cheques(m.from_user.id, verified=True)
     if len(user_cheques) != 0:
         text = beautifulize_data_all(user_cheques)
@@ -104,6 +106,7 @@ async def get_my_cheques(m: Message):
 
 @dp.message_handler(content_types="web_app_data")
 async def asd(message: Message):
+    con.reconnect()
     print(" ")
     url = message.web_app_data.data
     msg = await message.answer(text="Обрабатываю чек...")
