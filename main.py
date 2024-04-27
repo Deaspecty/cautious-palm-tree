@@ -1,7 +1,5 @@
 import asyncio
 import logging
-from aiogram.utils.web_app import check_webapp_signature
-import config
 from config import *
 import coloredlogs as coloredlogs
 from aiogram import Bot, Dispatcher, F

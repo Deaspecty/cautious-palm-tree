@@ -1,9 +1,6 @@
 import asyncio
-import json
-import logging
-
 from aiogram import Dispatcher, Bot
-from aiogram.types import Message, WebAppData, ContentType
+from aiogram.types import Message
 from db_repo import *
 from keyboards import web_app_qrscan
 from methods import *

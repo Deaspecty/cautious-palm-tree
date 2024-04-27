@@ -10,9 +10,7 @@ from selenium.webdriver.firefox.service import Service as FS
 from selenium.webdriver.chrome.service import Service as CS
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
 import config
-from entities import Cheque
 
 coloredlogs.install(level="DEBUG")
 
